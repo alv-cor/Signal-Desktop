@@ -61,7 +61,7 @@ jobs:
           echo "appimage_name=$FILE" >> "$GITHUB_OUTPUT"
           
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v2.2.2
         with:
           files: ${{ steps.get_appimage.outputs.appimage_name }}
           token: ${{ secrets.GH_TOKEN }}
