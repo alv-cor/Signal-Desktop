@@ -59,11 +59,9 @@ jobs:
         run: |
           FILE=$(find ./dist/ -type f -name '*.AppImage' | head -n 1)
           echo "appimage_name=$FILE" >> "$GITHUB_OUTPUT"
-
-
-      - name: Upload to Release Action
-        uses: Shopify/upload-to-release@37d6691606513d27d9510548416bf6389a3bd62b
+          
+      - name: Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: signal-desktop-${{ github.ref_name }}.AppImage
-          path: ${{ steps.get_appimage.outputs.appimage_name }}
-          repo-token: ${{ secrets.GH_TOKEN }}
+          files: ${{ steps.get_appimage.outputs.appimage_name }}
+          token: ${{ secrets.GH_TOKEN }}
