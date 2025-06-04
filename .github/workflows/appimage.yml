@@ -50,10 +50,17 @@ jobs:
           export SIGNAL_ENV=production
           npx electron-builder --linux AppImage --publish never
 
+      - name: Get AppImage filename from ./dist/
+        id: get_appimage
+        run: |
+          FILE=$(find ./dist/ -type f -name '*.AppImage' | head -n 1)
+          echo "appimage_name=$FILE" >> "$GITHUB_OUTPUT"
+
+
       - name: Upload to Release Action
         uses: Shopify/upload-to-release@v2.0.0
         with:
           name: signal-desktop-${{ github.ref_name }}.AppImage
-          path: dist/*.AppImage
+          path: ${{ steps.get_appimage.outputs.appimage_name }}
           content-type: application/vnd.appimage
           repo-token: ${{ secrets.GH_TOKEN }}
