@@ -62,7 +62,7 @@ jobs:
 
 
       - name: Upload to Release Action
-        uses: Shopify/upload-to-release@v2.0.0
+        uses: Shopify/upload-to-release@37d6691606513d27d9510548416bf6389a3bd62b
         with:
           name: signal-desktop-${{ github.ref_name }}.AppImage
           path: ${{ steps.get_appimage.outputs.appimage_name }}
