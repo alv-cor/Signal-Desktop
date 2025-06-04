@@ -1,0 +1,65 @@
+name: Publicar AppImage en Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4.2.2
+
+      - name: Extraer versión de Node.js desde .nvmrc
+        id: node-version
+        run: |
+          NODE_VERSION=$(cat .nvmrc | tr -d '[:space:]')
+          echo "node-version=$NODE_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3.9.1
+        with:
+          node-version: ${{ steps.node-version.outputs.node-version }}
+          cache: 'pnpm'
+
+      - name: Extraer versión de pnpm desde package.json
+        id: pnpm-version
+        run: |
+          PNPM_VERSION=$(grep '"packageManager"' package.json | sed -E 's/.*"packageManager": *"pnpm@([^"]+)".*/\1/')
+          echo "pnpm-version=$PNPM_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Enable Corepack y PNPM
+        run: |
+          corepack enable
+          corepack prepare pnpm@${{ steps.pnpm-version.outputs.pnpm-version }} --activate
+
+      - name: Instalar dependencias
+        run: pnpm install --frozen-lockfile
+
+      - name: Construir AppImage
+        run: |
+          export SIGNAL_ENV=production
+          npx electron-builder --linux AppImage
+
+      - name: Crear release en GitHub
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          body: |
+            Esta release contiene el AppImage de Signal Desktop (versión ${{ github.ref_name }}).
+
+      - name: Subir AppImage como asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: dist/*.AppImage
+          asset_name: signal-desktop-${{ github.ref_name }}.AppImage
+          asset_content_type: application/octet-stream
