@@ -1,7 +1,6 @@
 name: Publicar AppImage en Release
 
-env:
-  GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
 
 on:
   push:
@@ -12,7 +11,8 @@ on:
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
-
+    env:
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4.2.2
@@ -43,7 +43,10 @@ jobs:
           corepack prepare pnpm@${{ steps.pnpm-version.outputs.pnpm-version }} --activate
 
       - name: Instalar dependencias
-        run: pnpm install --frozen-lockfile && pnpm run build-release
+        run: pnpm install --frozen-lockfile
+        
+      - name: Transpilar js
+        run: pnpm run build-release
 
       - name: Construir AppImage
         run: |
