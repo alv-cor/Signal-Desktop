@@ -24,7 +24,9 @@ jobs:
         uses: actions/setup-node@v3.9.1
         with:
           node-version: ${{ steps.node-version.outputs.node-version }}
-          cache: 'pnpm'
+          
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4.1.0
 
       - name: Extraer versión de pnpm desde package.json
         id: pnpm-version
