@@ -44,11 +44,15 @@ jobs:
         
       - name: Transpilar js
         run: pnpm run build -- -p never
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Construir AppImage
         run: |
           export SIGNAL_ENV=production
           npx electron-builder --linux AppImage --publish never
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Get AppImage filename from ./dist/
         id: get_appimage
