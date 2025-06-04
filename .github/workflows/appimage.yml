@@ -66,5 +66,4 @@ jobs:
         with:
           name: signal-desktop-${{ github.ref_name }}.AppImage
           path: ${{ steps.get_appimage.outputs.appimage_name }}
-          content-type: application/vnd.appimage
           repo-token: ${{ secrets.GH_TOKEN }}
