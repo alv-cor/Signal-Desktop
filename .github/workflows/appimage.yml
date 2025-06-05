@@ -43,14 +43,12 @@ jobs:
         run: pnpm install --frozen-lockfile
         
       - name: Transpilar js
-        run: pnpm run build -- -p never
+        run: pnpm run build
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Construir AppImage
-        run: |
-          export SIGNAL_ENV=production
-          npx electron-builder --linux AppImage --publish never
+        run: SIGNAL_ENV=production pnpm run build:electron --linux AppImage
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
